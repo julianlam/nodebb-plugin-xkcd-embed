@@ -2,7 +2,7 @@
 
 Turns a short code (xkcd#1234) into an xkcd image (with link to comic) in posts
 
-![Screenshot](http://i.imgur.com/8WgVw8X.jpg)
+![Screenshot](http://i.imgur.com/KB6VFBN.jpg)
 
 ## Installation
 
