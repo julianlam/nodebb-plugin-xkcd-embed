@@ -12,5 +12,5 @@
         { "hook": "action:app.load", "method": "init" },
         { "hook": "filter:post.parse", "method": "parse", "priority": 6 }
     ],
-    "minver": "0.4.0"
+    "compatibility": "~0.4.0"
 }
