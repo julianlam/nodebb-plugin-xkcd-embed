@@ -1,0 +1,16 @@
+{
+    "id": "nodebb-plugin-xkcd-embed",
+    "name": "XKCD Embedding",
+    "description": "Turns a short code (xkcd#1234) into an xkcd image (with link to comic) in posts",
+    "url": "https://github.com/julianlam/nodebb-plugin-xkcd-embed",
+    "library": "./index.js",
+    "templates": "templates",
+    "less": [
+        "less/default.less"
+    ],
+    "hooks": [
+        { "hook": "action:app.load", "method": "init" },
+        { "hook": "filter:post.parse", "method": "parse", "priority": 6 }
+    ],
+    "minver": "0.4.0"
+}

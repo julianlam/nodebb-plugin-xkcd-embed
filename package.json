@@ -1,0 +1,24 @@
+{
+  "name": "nodebb-plugin-xkcd-embed",
+  "version": "0.2.1",
+  "description": "Turns a short code (xkcd#1234) into an xkcd image (with link to comic) in posts",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/julianlam/nodebb-plugin-xkcd-embed"
+  },
+  "keywords": [
+    "nodebb",
+    "plugin",
+    "github"
+  ],
+  "author": "Julian Lam <julian@designcreateplay.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/julianlam/nodebb-plugin-xkcd-embed/issues"
+  },
+  "dependencies": {
+    "lru-cache": "^2.5.0",
+    "request": "^2.34.0"
+  }
+}
