@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-xkcd-embed",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turns a short code (xkcd#1234) into an xkcd image (with link to comic) in posts",
   "main": "index.js",
   "repository": {
