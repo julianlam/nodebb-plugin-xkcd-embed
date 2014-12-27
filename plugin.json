@@ -12,5 +12,7 @@
         { "hook": "static:app.load", "method": "init" },
         { "hook": "filter:parse.post", "method": "parse", "priority": 6 }
     ],
-    "compatibility": "~0.4.0"
+    "nbbpm": {
+        "compatibility": "^0.6.0"
+    }
 }
