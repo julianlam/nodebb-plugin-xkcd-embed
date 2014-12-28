@@ -10,13 +10,19 @@ var	request = require('request'),
     Embed = {},
     cache, appModule;
 
-Embed.init = function(app, middleware, controllers) {
-    appModule = app;
+Embed.init = function(data, callback) {
+    appModule = data.app;
+	callback();
 };
 
-Embed.parse = function(raw, callback) {
+Embed.parse = function(data, callback) {
     var xkcdKeys = [],
+        raw = data && data.postData && data.postData.content,
         matches, cleanedText;
+
+    if (!raw) {
+        callback(null, data);
+    }
 
     cleanedText = S(raw).stripTags().s;
     matches = cleanedText.match(xkcdRegex);
@@ -52,18 +58,19 @@ Embed.parse = function(raw, callback) {
             appModule.render('partials/comics-block', {
                 comics: comics
             }, function(err, html) {
-                callback(null, raw += html);
+                raw += html;
+                data.postData.content = raw;
+                callback(null, data);
             });
         } else {
             winston.warn('Encountered an error parsing xkcd embed codes, not continuing');
-            callback(null, raw);
+            callback(null, data);
         }
     });
 };
 
 var getComic = function(xkcdKey, callback) {
     var comicNum = xkcdKey.split('#')[1];
-    console.log('getting comic', comicNum);
 
     request.get({
         url: 'https://xkcd.com/' + comicNum + '/info.0.json'
