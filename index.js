@@ -73,10 +73,11 @@ var getComic = function(xkcdKey, callback) {
     var comicNum = xkcdKey.split('#')[1];
 
     request.get({
-        url: 'https://xkcd.com/' + comicNum + '/info.0.json'
+        url: 'https://xkcd.com/' + comicNum + '/info.0.json',
+        json: true
     }, function(err, response, body) {
         if (response.statusCode === 200) {
-            callback(null, JSON.parse(body));
+            callback(null, body);
         } else {
             callback(err);
         }
