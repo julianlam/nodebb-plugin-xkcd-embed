@@ -10,9 +10,13 @@
     ],
     "hooks": [
         { "hook": "static:app.load", "method": "init" },
-        { "hook": "filter:parse.post", "method": "parse", "priority": 6 }
+        { "hook": "filter:parse.post", "method": "parse", "priority": 6 },
+        { "hook": "filter:admin.header.build", "method": "addAdminNavigation" }
     ],
     "nbbpm": {
         "compatibility": "^0.6.0"
-    }
+    },
+    "scripts": [
+        "./static/lib/admin.js"
+    ]
 }

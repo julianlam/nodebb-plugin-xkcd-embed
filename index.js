@@ -6,13 +6,42 @@ var	request = require('request'),
     S = module.parent.require('string'),
     meta = module.parent.require('./meta'),
 
+    controllers = require('./lib/controllers'),
     xkcdRegex = /xkcd#\d+/gm,
-    Embed = {},
+    Embed = {
+        settings: {
+            display: 'append'    // This is the default, but can be overridden in the ACP
+        }
+    },
     cache, appModule;
 
 Embed.init = function(data, callback) {
+    var router = data.router,
+        hostMiddleware = data.middleware,
+        hostControllers = data.controllers;
+        
     appModule = data.app;
-	callback();
+
+    router.get('/admin/plugins/xkcd-embed', hostMiddleware.admin.buildHeader, controllers.renderAdminPage);
+    router.get('/api/admin/plugins/xkcd-embed', controllers.renderAdminPage);
+
+    meta.settings.get('xkcd-embed', function(err, settings) {
+        if (!err) {
+            winston.verbose('[plugin/xkcd-embed] Settings loaded');
+            Embed.settings = settings;
+        }
+    });
+
+    callback();
+};
+
+Embed.addAdminNavigation = function(header, callback) {
+    header.plugins.push({
+        route: '/plugins/xkcd-embed',
+        name: 'XKCD Embed'
+    });
+
+    callback(null, header);
 };
 
 Embed.parse = function(data, callback) {
@@ -51,17 +80,26 @@ Embed.parse = function(data, callback) {
     }, function(err, comics) {
         if (!err) {
             // Filter out non-existant comics
-            comics = comics.filter(function(issue) {
-                return issue;
-            });
+            comics = comics.filter(Boolean);
 
-            appModule.render('partials/comics-block', {
-                comics: comics
-            }, function(err, html) {
-                raw += html;
-                data.postData.content = raw;
-                callback(null, data);
-            });
+            if (Embed.settings.display === 'replace') {
+                async.each(comics, function(comic, next) {
+                    appModule.render('partials/comic-inline', comic, function(err, html) {
+                        data.postData.content = data.postData.content.replace(new RegExp('xkcd#' + comic.num, 'g'), html);
+                        next();
+                    });
+                }, function(err) {
+                    callback(null, data);
+                });
+            } else {
+                appModule.render('partials/comics-block', {
+                    comics: comics
+                }, function(err, html) {
+                    raw += html;
+                    data.postData.content = raw;
+                    callback(null, data);
+                });
+            }
         } else {
             winston.warn('Encountered an error parsing xkcd embed codes, not continuing');
             callback(null, data);
