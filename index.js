@@ -2,6 +2,7 @@
 
 var	request = require('request'),
     async = module.parent.require('async'),
+    url = module.parent.require('url'),
     winston = module.parent.require('winston'),
     S = module.parent.require('string'),
     meta = module.parent.require('./meta'),
@@ -79,8 +80,15 @@ Embed.parse = function(data, callback) {
         }
     }, function(err, comics) {
         if (!err) {
-            // Filter out non-existant comics
-            comics = comics.filter(Boolean);
+            // Filter out non-existant comics, and change the image link to https only
+            var urlObj;
+            comics = comics.filter(Boolean).map(function(comic) {
+                urlObj = url.parse(comic.img);
+                urlObj.protocol = 'https:';
+                comic.img = url.format(urlObj);
+
+                return comic;
+            });
 
             if (Embed.settings.display === 'replace') {
                 async.each(comics, function(comic, next) {
