@@ -45,16 +45,26 @@ Embed.addAdminNavigation = function(header, callback) {
     callback(null, header);
 };
 
-Embed.parse = function(data, callback) {
-    var xkcdKeys = [],
-        raw = data && data.postData && data.postData.content,
-        matches, cleanedText;
-
-    if (!raw) {
-        callback(null, data);
+Embed.parsePost = function(data, callback) {
+    if (!data || !data.postData || !data.postData.content) {
+        return callback(null, data);
     }
 
-    cleanedText = S(raw).stripTags().s;
+    Embed.parseRaw(data.postData.content, function(err, content) {
+        if (err) {
+            return callback(err);
+        }
+
+        data.postData.content = content;
+        callback(null, data);
+    });
+};
+
+Embed.parseRaw = function(content, callback) {
+    var xkcdKeys = [],
+        matches, cleanedText;
+
+    cleanedText = S(content).stripTags().s;
     matches = cleanedText.match(xkcdRegex);
 
     if (matches && matches.length) {
@@ -93,24 +103,23 @@ Embed.parse = function(data, callback) {
             if (Embed.settings.display === 'replace') {
                 async.each(comics, function(comic, next) {
                     appModule.render('partials/comic-inline', comic, function(err, html) {
-                        data.postData.content = data.postData.content.replace(new RegExp('xkcd#' + comic.num, 'g'), html);
+                        content = content.replace(new RegExp('xkcd#' + comic.num, 'g'), html);
                         next();
                     });
                 }, function(err) {
-                    callback(null, data);
+                    callback(null, content);
                 });
             } else {
                 appModule.render('partials/comics-block', {
                     comics: comics
                 }, function(err, html) {
-                    raw += html;
-                    data.postData.content = raw;
-                    callback(null, data);
+                    content += html;
+                    callback(null, content);
                 });
             }
         } else {
             winston.warn('Encountered an error parsing xkcd embed codes, not continuing');
-            callback(null, data);
+            callback(null, content);
         }
     });
 };
